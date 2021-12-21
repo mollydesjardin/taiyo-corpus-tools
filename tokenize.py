@@ -8,7 +8,7 @@ Performs whitespace tokenization ONLY. Other MeCab parsing options return a
 data structure with grammatical information about individual words. Wakati
 simply returns text with whitespace inserted between tokens.
 
-This script writes out that whitespace-tokenized text in a new file with a p_
+This script writes out that whitespace-tokenized text in a new file with a t-
 prefix + input filename to the input directory.
 """
 
@@ -17,11 +17,10 @@ import MeCab, glob
 
 m = MeCab.Tagger("-Owakati")
 
-for input_filename in glob.iglob("*.txt"):
-    with open(input_filename, 'r', encoding='utf-8') as input_file:
-        text = input_file.read()
-        parsed = m.parse (text)
-        output_filename = 'p_{}'.format(input_filename)
-        with open(output_filename, 'w', encoding='utf-8') as output_file:
-            output_file.write(parsed)
-
+for filename in glob.iglob("articles/*.txt"):
+    with open(filename, 'r', encoding='utf-8') as f:
+        text = f.read()
+        parsed = m.parse(text)
+        output_filename = 'tokenized/t-{}'.format(filename[9:])
+        with open(output_filename, 'w', encoding='utf-8') as f:
+            f.write(parsed)
