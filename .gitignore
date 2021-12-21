@@ -4,3 +4,6 @@
 .DS_Store
 *.txt
 *.xml
+taiyo_cd/
+articles/
+tokenized/
