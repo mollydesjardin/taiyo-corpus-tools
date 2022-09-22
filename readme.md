@@ -2,16 +2,11 @@
 _this doc last updated 21 September, 2022_
 
 ## Intro
-Taiyō Corpus Tools is a series of short Python scripts that preprocesses [NINJAL's Taiyō Corpus](https://ccd.ninjal.ac.jp/cmj/taiyou/index.html) 
- for use with common text analysis tools and software. NINJAL's edition is a subset of full-text, hand-corrected articles from [Taiyō 太陽 magazine](https://ja.wikipedia.org/wiki/%E5%A4%AA%E9%99%BD_(%E5%8D%9A%E6%96%87%E9%A4%A8) (1895-1928). The corpus itself **is not included** here.
+Taiyō Corpus Tools is a set of short Python scripts that preprocesses Japanese-language text from [NINJAL's Taiyō Corpus](https://ccd.ninjal.ac.jp/cmj/taiyou/index.html) for use with common text analysis software. The steps consist of:
  
-These preprocessing steps are common tasks you might need for Japanese-language documents to make them more compatible with software that assumes whitespace tokenization or UTF-8 encoding.
-
-Run in order:
 1. convert_shiftjis_utf8.py -- convert NINJAL's Shift-JIS-encoded, XML files of monthly magazine issues to UTF-8 with romanized XML tag names
-2. extract_metadata_text.py -- strip out XML tags and parses articles into individual text files, retaining all article metadata in a separate CSV
+2. extract_metadata_text.py -- strip out XML tags and parses articles into individual text files; save corresponding article metadata in a separate CSV
 3. tokenize.py -- insert whitespace between words using MeCab and save final output as article-level .txt files
-
 
 ### Requirements
 * NINJAL Taiyō Corpus data files (see [About the data](#-about-the-data) section below)
@@ -28,7 +23,7 @@ The tokenization step requires mecab-python3 and assumes you have changed your d
 Using the Modern Literary Japanese 近代文語 dictionary is optional, but it most closely matches Taiyō's era and style of language and should produce the best word-splitting results. There are a whole range of dictionaries and their documentation at the [UniDic homepage](https://clrd.ninjal.ac.jp/unidic/). Of course, if you decide to use the default dictionary you can skip the customization step.
 
 ### Get the source data
-This repo **does not contain** the data files that make up NINJAL's corpus. Their [2005 CD-ROM edition] (https://ccd.ninjal.ac.jp/cmj/taiyou/index.html) may still be found on secondary markets if you wish to purchase your own copy. Other suggestions below from my former life as an academic librarian.
+This repo **does not contain** the data files that make up NINJAL's corpus. Their [2005 CD-ROM edition](https://ccd.ninjal.ac.jp/cmj/taiyou/index.html) may still be found on secondary markets if you wish to purchase your own copy. Other suggestions below from my former life as an academic librarian.
 
 The Taiyō Corpus is now part of the Meiji/Taishō historical corpora available on NINJAL's Chūnagon 中納言 corpus browser platform (free with registration), but I don't know if data download is possible or in similar format to the CD-ROM's files. Contact NINJAL with any questions about accessing data from them directly.
 
@@ -39,20 +34,22 @@ _A version of the Taiyō magazine archives is lately available on the JapanKnowl
 
 ## Background
 ### Why?
-[ why was/is Japanese text hard to work with, and it's easier to deal with UTF-8 starting from Python 3 so this used to be more painful in 2.7 when I started this project.]
+The tasks performed by these three scripts are common ones for making Japanese-language text files compatible with NLP software. Typically, non-Japanese-specific tools assume whitespace tokenization or UTF-8 encoding. Additionally, Beautiful Soup and other XML/HTML parsing libraries cannot handle non-ASCII tag or attribute names, as found in the NINJAL Taiyō files (as of this writing). None of the issues with these files is unique to the NINJAL corpus or data prepared by NINJAL generally. You may encounter specialized encoding or seemingly quirky technical aspects in any Japanse text documents, especially if they are "older" (relatively speaking). My description applies to the _vast majority_ of what you might find as source material for text analysis projects online in Japanese, even in 2022, in fields ranging from literature to law and government. However, this mismatch of source and software is solvable.
+
+My motivation was personal: I wanted to try using the Taiyō articles with software popular among digital humanities enthusiasts, like Voyant, AntConc, or Topic Modeling Tool. I also wanted to be able to show the possibilities to colleagues in academic librarianship or university Japanese studies programs through demos and workshops. However, "having" texts in some machine-readable format doesn't mean they are necessarily compatible with the widespread assumptions of DH tools outside Japan. It is the start but often not the end.
+
+Short and simple as it looks now, when I began grappling with Taiyō around 2015, I was still using Python 2.7 and there was little to no documentation online (in any language I read) that really addressed what I was attempting to do. I spent a long time searching online and reading Japanese or English blog posts about barely-referenced options for MeCab, cobbling tidbits from various sources together to eventually solve my problem: a MeCab parsing option that was compatible with the dictionary I needed to use; getting around non-ASCII XML tags breaking the libraries I tried to parse them; and dealing with the niche encoding. (I got some invaluable advice from colleagues as well.) In 2022, some of the issues are either much more searchable online, or no longer exist in Python 3 -- especially re: Unicode data, bane of my existence in 2.7.
+
+I am very pleased to no longer be hitting my head against the wall of ancient Python "handling" of Unicode (etc), but some things that now seem obvious to me may still not be straightforward to others. I hope documenting my process, and sharing the code, can save someone else from doing the same with their own annoying barrier to research with historical Japanese texts.
 
 ### About the data
-[explain contents of CD/what I was dealing with ... including INFO links about this particular corpus, plus what is Taiyo at all - all articles from issues in years 1895, 1901, 1909, 1917, 1925. You can find more info about this particular corpus on the [official Taiyo corpus page at NINJAL](https://ccd.ninjal.ac.jp/cmj/taiyou/index.html)]
-Notes: it does not cover 100% of the years or articles, but full issues from select years. They can find out more at NINJAL if they want. The disc also includes analysis software that the files are for specific use with but my scripts are for getting the text and select metadata for use with *other* stuff.
+NINJAL's Taiyō Corpus is a subset of full-text, hand-corrected articles from [Taiyō 太陽 magazine](https://ja.wikipedia.org/wiki/%E5%A4%AA%E9%99%BD_(%E5%8D%9A%E6%96%87%E9%A4%A8) (1895-1928). The contents of the corpus include all articles from issues published in 1895, 1901, 1909, 1917, 1925. While it is a large amount of text, it doesn't cover the magazine's run comprehensively. You can find more info about this particular corpus on the [official Taiyo corpus page at NINJAL](https://ccd.ninjal.ac.jp/cmj/taiyou/index.html). Although the CD-ROM edition includes the Himawari software for corpus analysis, the scripts I provide here are meant for getting the text and select metadata usable with any *other* tools -- especially those that are not meant specifically for Japanese language.
 
-(The original XML files are divided by issue and each contain multiple articles. Also, the files themselves have all the metadata embedded in the XML tags/attributes) 
+The data consists of one XML file per magazine issue containing all articles' text and metadata. The corpus is hand-corrected full-text annotated by professional linguists -- very high quality, and far better than OCR alone given its poor performance on Japanese documents of this period and format. All metadata is contained within the XML tags in the data files: publishing information for the magazine issues and each article (author, title, genre) and specialized linguistic attributes at the article or word level (style of speech, and glosses of errors or rare kanji that could not be entered at the time). There is tokenization of the articles themselves but only at the sentence level.
 
 ### Why this particular way / my choices
-These are a series of very short scripts meant to be run in order and that assume a particular directory structure containing XML files from the NINJAL Taiyō corpus CD-ROM. Each script performs a common task in pre-processing Japanese-language text for use with text analysis software. I kept them separate with the aim of simplifying reuse by others who aren't working with this specific corpus.
-
-These scripts = modular/reusable. They are potentially text processing tasks specific & common to Japanese - encoding conversion, dealing with non-ASCII XML tag names or attributes and why that's a problem for BS, and tokenizing.
-
-I wrote these scripts for my own, one-time personal use, but in an ideal world, they would have command line arguments instead of needing to modify the source to change minor options or put hard-coded configurations in a separate file. I chose a very permissive license for a reason; feel free to adopt and enhance this basic code in your own projects.
+Each script in this pipeline performs a very simple task, but I have kept them separate to simplify reuse by others who aren't working with this specific corpus. They are potentially text processing tasks specific & common to Japanese - encoding conversion, dealing with non-ASCII XML tag names or attributes and why that's a problem for BS, and tokenizing.
+These scripts = modular/reusable. 
 
 
 ## Pipeline
@@ -128,6 +125,11 @@ Also explain the filename convention and that you can/should change it to what y
 
 ## Reuse
 Copyright Molly Des Jardin
+
+I wrote these scripts for my own, one-time personal use, and no longer maintain them. Ideally, I would prefer command line arguments and/or a config file instead of so much hard-coding throughout. There are doubtless other changes that might improve the code or design. I chose a very permissive license for a reason: please freely adopt and enhance this basic code in your own projects.
+
+
+MIT License
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
