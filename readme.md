@@ -1,5 +1,5 @@
 # Taiyō Corpus Tools
-_this doc last updated 21 September, 2022_
+_this doc last updated 22 September, 2022_
 
 ## Intro
 Taiyō Corpus Tools is a set of short Python scripts that preprocesses Japanese-language text from [NINJAL's Taiyō Corpus](https://ccd.ninjal.ac.jp/cmj/taiyou/index.html) for use with common text analysis software. The steps consist of:
@@ -49,22 +49,27 @@ The data consists of one XML file per magazine issue containing all articles' te
 
 ### Why this particular way / my choices
 Each script in this pipeline performs a very simple task, but I have kept them separate to simplify reuse by others who aren't working with this specific corpus. They are potentially text processing tasks specific & common to Japanese - encoding conversion, dealing with non-ASCII XML tag names or attributes and why that's a problem for BS, and tokenizing.
-These scripts = modular/reusable. 
+These scripts = modular/reusable.
+
+WHY BS not another XML library?
 
 
-## Pipeline
-[This is a pipeline meant to be run in a specific order, on specific files that live in specific directory structure. If you're using mine, make the dirs first. 
+## Running the scripts
+### 0. Directory structure.
+All three scripts assume the following structure relative to the folder they reside in (files listed before directories). Input and output data, and the metadata CSV exported in step 2, are in subfolders within the "data/" directory.
 
-### Directory structure
-[this is presented as files, then directories in alphabetical order]
+*Before running the scripts, make sure expected directories exist within "data/" (articles, tokenized, utf8).* Each script saves its own separate output without overwriting previous steps.
+
+"data/taiyo_cd/" indicates the corpus CD-ROM data with its file structure as-is.
+
+```
 Taiyo/
 |-- convert_shiftjis_utf8.py
 |-- extract_metadata_text.py
 |-- tokenize.py
 `-- data/
-    |-- taiyo_metadata.csv //output of extract_metadata_text.py
+    |-- taiyo_metadata.csv
     |-- articles/
-    |   |-- //output of extract_metadata_text.py
     |   |-- 189501_＊_〈扉〉.txt
     |   |-- 189501_＊_〈新年挨拶〉.txt
     |   |-- ...
@@ -72,7 +77,6 @@ Taiyo/
     |   |-- 192514_金易二郎（評）_高段名手　特選将棋.txt
     |   `-- 192514_鬼谷庵_政界鬼語.txt
     |-- taiyo_cd/
-    |   |-- //directory structure on CD-ROM of relevant XML files
     |   |-- autorun.inf
     |   |-- Himawari/
     |   |-- index.html
@@ -85,7 +89,6 @@ Taiyo/
     |       |-- ...
     |       `-- t192514.xml
     |-- tokenized/
-    |   |-- //output of tokenize.py
     |   |-- t-189501_＊_〈扉〉.txt
     |   |-- t-189501_＊_〈新年挨拶〉.txt
     |   |-- ...
@@ -93,25 +96,28 @@ Taiyo/
     |   |-- t-192514_金易二郎（評）_高段名手　特選将棋.txt
     |   `-- t-192514_鬼谷庵_政界鬼語.txt
     `-- utf8/
-        |-- //output of convert_shiftjis_utf8.py
         |-- u-t189501.xml
         |-- u-t189502.xml
         |-- ...
         `-- u-t192514.xml
+```
 
-### Step 1: Shift-JIS to Unicode and XML tag names to ASCII
-Beautiful Soup don't recognize tag names that aren't ASCII. The Taiyō XML files are full of non-ASCII tags in Japanese, on top of not being UTF-8 encoding.
+### Step 1: Shift-JIS to Unicode and XML normalization
+The Taiyō XML files contain many XML elements and attributes named in Japanese. As of this writing, Beautiful Soup cannot handle them as-is (although non-ASCII attribute values don't present issues). This script replaces all non-ASCII tag and element names with romanized or brief translated equivalents. Output is saved as one UTF-8 .xml file per magazine issue, in "utf8/" with u- preceding the source CD-ROM filenames.
 
-### Step 2: Extract article text & metadata, write out to untokenized .txt and CSV
-This step results in the articles now saved in individual txt files, without tokenization, and writes all the metadata in the stripped XML tags into a CSV to retain. If you want the original Japanese without spaces between "words", stop here (or if you'd like to compare the output of different tokenizer and dictionary choices).
+Original element/attribute names and their replacements are listed in comments at the top of the script, so this is easily changed as needed. If you modify this, make sure to account for the changed replacements in step 2.
+
+### Step 2: Extract article text and metadata
+This step extracts contents (text) of each article and saves one *untokenized* .txt file per article in directory "articles/". The metadata for each article contained in XML attributes is saved separately as a CSV file in the "data/" directory. No metadata is saved in the .txt files themselves.
+
+The naming scheme I used, "issue_author_title.txt", creates unique filenames that map one-to-one with the full metadata CSV so no information should be lost. However, filename convention is easily changed during CSV building and file output steps.
 
 ### Step 3: Tokenize article text with MeCab
-Have MeCab put a space between "words" in the texts from Step 2. This saves a new set of files rather than overwriting Step 2's output.
+Have MeCab put a space between "words" in the texts from Step 2. This saves a new set of files rather than overwriting Step 2's output. saves resulting text as UTF-8 .txt in directory "tokenized/".
 
 ## Final output
 Then your output will be X Y relative to the directory where you ran them. (where is it, what are the files called... concretely)
 Also explain the filename convention and that you can/should change it to what you prefer. Make sure you modify the CSV output to include a unique ID index column if you decide to do that.
-
 
 
 ## Further Resources
