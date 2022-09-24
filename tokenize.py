@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
+# -*- coding: utf_8 -*-
 
 """
 This assumes you have a directory of UTF-8 Japanese .txt files to batch
@@ -17,10 +18,10 @@ import MeCab, glob
 
 m = MeCab.Tagger("-Owakati")
 
-for filename in glob.iglob("articles/*.txt"):
+for filename in glob.iglob("data/articles/*.txt"):
     with open(filename, 'r', encoding='utf-8') as f:
         text = f.read()
         parsed = m.parse(text)
-        output_filename = 'tokenized/t-{}'.format(filename[9:])
+        output_filename = 'data/tokenized/t-{}'.format(filename[9:])
         with open(output_filename, 'w', encoding='utf-8') as f:
             f.write(parsed)

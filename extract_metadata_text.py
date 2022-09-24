@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
+# -*- coding: utf_8 -*-
 
 """
 This script reads in each XML file containing an issue's worth of articles from
@@ -24,7 +25,7 @@ remove tags that don't enclose any text: br, l
 """
 
 
-from bs4 import BeautifulSoup as BS
+from bs4 import BeautifulSoup as bs
 import glob, csv
 
 metadata_keys = ['author','title','column','style','genre']
@@ -33,7 +34,7 @@ articles_list = []
 for infile in glob.iglob("*.xml"):
 # Get metadata and put in dict. Write out file with text only as cleaned
     with open(infile, 'r', encoding='utf-8') as soup_in:
-        soup = BS(soup_in, 'lxml')
+        soup = bs(soup_in, 'lxml')
         issuedate = infile[3:-4]
 
 # saving metadata for writing out later
@@ -44,13 +45,13 @@ for infile in glob.iglob("*.xml"):
                 article_md.append(article.attrs[key])
             articles_list.append(article_md)
 
-            article_filename = 'articles/{}_{}_{}.txt'.format(article_md[0], article_md[1], article_md[2])
+            article_filename = 'data/articles/{}_{}_{}.txt'.format(article_md[0], article_md[1], article_md[2])
 
             with open(article_filename, 'w', encoding='utf-8') as output_file:
                 output_file.write(article.text.strip())
 
 # write header from metadata_keys then write each row of md in list
-with open('taiyo_metadata.csv', 'w', encoding='utf-8') as csvfile:
+with open('data/taiyo_metadata.csv', 'w', encoding='utf-8') as csvfile:
     writer = csv.writer(csvfile)
     writer.writerow(['issue'] + metadata_keys)
     writer.writerows(articles_list)

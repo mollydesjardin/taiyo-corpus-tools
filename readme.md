@@ -1,5 +1,5 @@
 # Taiyō Corpus Tools
-_this doc last updated 22 September, 2022_
+_this doc last updated 23 September, 2022_
 
 ## Intro
 Taiyō Corpus Tools is a set of short Python scripts that preprocesses Japanese-language text from [NINJAL's Taiyō Corpus](https://ccd.ninjal.ac.jp/cmj/taiyou/index.html) for use with common text analysis software. The steps consist of:
@@ -103,21 +103,18 @@ Taiyo/
 ```
 
 ### Step 1: Shift-JIS to Unicode and XML normalization
+*convert_shiftjis_utf8.py*
 The Taiyō XML files contain many XML elements and attributes named in Japanese. As of this writing, Beautiful Soup cannot handle them as-is (although non-ASCII attribute values don't present issues). This script replaces all non-ASCII tag and element names with romanized or brief translated equivalents. Output is saved as one UTF-8 .xml file per magazine issue, in "utf8/" with u- preceding the source CD-ROM filenames.
 
-Original element/attribute names and their replacements are listed in comments at the top of the script, so this is easily changed as needed. If you modify this, make sure to account for the changed replacements in step 2.
-
 ### Step 2: Extract article text and metadata
+*extract_metadata_text.py*
 This step extracts contents (text) of each article and saves one *untokenized* .txt file per article in directory "articles/". The metadata for each article contained in XML attributes is saved separately as a CSV file in the "data/" directory. No metadata is saved in the .txt files themselves.
 
 The naming scheme I used, "issue_author_title.txt", creates unique filenames that map one-to-one with the full metadata CSV so no information should be lost. However, filename convention is easily changed during CSV building and file output steps.
 
 ### Step 3: Tokenize article text with MeCab
+*tokenize.py*
 Have MeCab put a space between "words" in the texts from Step 2. This saves a new set of files rather than overwriting Step 2's output. saves resulting text as UTF-8 .txt in directory "tokenized/".
-
-## Final output
-Then your output will be X Y relative to the directory where you ran them. (where is it, what are the files called... concretely)
-Also explain the filename convention and that you can/should change it to what you prefer. Make sure you modify the CSV output to include a unique ID index column if you decide to do that.
 
 
 ## Further Resources

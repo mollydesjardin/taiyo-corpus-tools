@@ -1,4 +1,5 @@
-# -*- coding: utf-8 -*-
+#!/usr/bin/env python3
+# -*- coding: utf_8 -*-
 
 """
 Converts a directory of .xml files (substitute path and extension as needed)
@@ -63,11 +64,11 @@ replacements = {
 
 import glob
 
-for filename in glob.iglob('taiyo_cd/XML/*.xml'):
+for filename in glob.iglob('data/taiyo_cd/XML/*.xml'):
     with open(filename, mode='r', encoding='Shift-JIS', errors='ignore') as f:
         lines = f.read()
     for key in replacements.keys():
         lines = lines.replace(key,replacements[key])
 
-    with open('u-' + filename[-11:], mode='w', encoding='utf-8') as f:
+    with open('data/utf8/u-' + filename[-11:], mode='w', encoding='utf-8') as f:
         f.write(lines)
