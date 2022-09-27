@@ -136,7 +136,7 @@ Missing section ＊＊ and genre ＊＊＊ values also appear in the CSV.
 ## Reuse
 Copyright Molly Des Jardin
 
-I wrote these scripts for my own, one-time personal use, and no longer maintain them. There are doubtless many changes that might improve the project (not least, less hard coding in favor of command line arguments or a config file). Please feel free to reuse or enhance this basic code in your own projects.
+I wrote these scripts for my own, one-time personal use, and no longer maintain them. There are doubtless many improvements it could use (not least, command line arguments or a config file instead of hard-coding). Please feel free to reuse or enhance this basic code in your own projects.
 
 
 *MIT License*
