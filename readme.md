@@ -96,15 +96,15 @@ Article text is tokenized at the sentence level only.
 All three scripts operate assuming the [directory structure and files described above](#directory-structure). They should be run in the top-level project directory with no arguments.
 
 ### Step 1: Shift-JIS to Unicode and XML normalization
-The Taiyō XML files contain many XML elements and attributes named in Japanese. While this is valid XML, it presents a problem for parsing libraries (as of this writing). This script replaces all non-ASCII tag and element names with romanized or English keyword equivalents. Output is saved as one UTF-8 .xml file per magazine issue, in directory "utf8/" with u- preceding the source CD-ROM filenames.
+The Taiyō XML files contain many XML elements and attributes named in Japanese. While this is valid XML, it presents a problem for parsing libraries (as of this writing). This script replaces all non-ASCII tag and element names with romanized or English keyword equivalents. Output is saved as one UTF-8 .xml file per magazine issue, in directory "data/utf8/" with u- preceding the source CD-ROM filenames.
 
 ### Step 2: Extract article text and metadata
-This step extracts contents (text) of each article and saves one *untokenized* .txt file per article in directory "articles/". The metadata for each article contained in XML attributes is saved separately as a CSV file in the "data/" directory. No metadata is saved in the .txt files themselves.
+This step extracts contents (text) of each article and saves one *untokenized* .txt file per article in directory "data/articles/". The metadata for each article contained in XML attributes is saved separately as a CSV file in the "data/" directory. No metadata is saved in the .txt files themselves.
 
 The naming scheme I used is "articleID_issue_author_title.txt", where articleID is a simple counter of articles that increments as they are processed. This was an arbitrary choice and can be changed easily, but beware of the small number of articles where issue, author, and title are not enough to create unique filenames.
 
 ### Step 3: Tokenize article text with MeCab
-Finally, tokenize the article text in Step 2 output files, inserting whitespace between "words" as parsed by MeCab using the 近代文語UniDic. The resulting text is saved as a new set of article files in directory "tokenized/", with t- preceding filenames in the "articleID_issue_author_title.txt" format of Step 2.
+Finally, tokenize the article text in Step 2 output files, inserting whitespace between "words" as parsed by MeCab using the 近代文語UniDic. The resulting text is saved as a new set of article files in directory "data/tokenized/", with t- preceding filenames in the "articleID_issue_author_title.txt" format of Step 2.
 
 ## Final output
 * "data/taiyo_metadata.csv" -- CSV containing all article metadata retained from original files' XML tags. Columns are:
@@ -119,8 +119,8 @@ Finally, tokenize the article text in Step 2 output files, inserting whitespace 
 
 *Note*: Missing or N/A author value is indicated in CSV and filenames with ＊. For example:
 ```
-t-189504_＊_長三州翁逝く.txt
-t-191704_＊_〈新刊紹介〉.txt
+t-0001_190103_＊_〈扉〉.txt
+t-0002_190103_＊_憲政の一大危機.txt
 ```
 Missing section ＊＊ and genre ＊＊＊ values also appear in the CSV.
 
