@@ -2,8 +2,6 @@
 *.csv
 *.zip
 .DS_Store
-*.txt
 *.xml
-taiyo_cd/
-articles/
-tokenized/
+data/
+__pycache__/
