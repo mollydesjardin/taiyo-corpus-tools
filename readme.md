@@ -1,5 +1,5 @@
 # Taiyō Corpus Tools
-_last updated 26 September, 2022_
+_last updated 27 September, 2022_
 
 ## Intro
 Taiyō Corpus Tools is a set of short Python scripts that preprocesses Japanese-language text from [NINJAL's Taiyō 太陽 magazine corpus](https://ccd.ninjal.ac.jp/cmj/taiyou/index.html) for use with common analysis software. Run the three scripts in order:
