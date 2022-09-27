@@ -83,7 +83,7 @@ I spent a long time searching online and reading Japanese or English blog posts 
 In 2022, some of the problems I encountered have solutions readily searchable online, or even better, no longer exist. But "quirky" issues like the ones here are still common with Japanese-language documents, and not unique to Taiyō. I hope documenting my process, and sharing the code, can save others some time and frustration.
 
 ### About the data
-NINJAL's Taiyō Corpus contains full-text, hand-corrected articles from [Taiyō 太陽 magazine](https://ja.wikipedia.org/wiki/%E5%A4%AA%E9%99%BD_%28%E5%8D%9A%E6%96%87%E9%A4%A8%29) (published 1895-1928). The corpus includes thousands of articles from 1895, 1901, 1909, 1917, and 1925. You can find more info about this particular corpus on [NINJAL's website](https://ccd.ninjal.ac.jp/cmj/taiyou/index.html). The scripts I provide here are meant for getting the text and select metadata usable with software not meant specifically for Japanese-language text.
+NINJAL's Taiyō Corpus contains full-text, hand-corrected articles from [Taiyō 太陽 magazine](https://ja.wikipedia.org/wiki/%E5%A4%AA%E9%99%BD_%28%E5%8D%9A%E6%96%87%E9%A4%A8%29) (published 1895-1928). The corpus includes thousands of articles from 1895, 1901, 1909, 1917, and 1925. You can find more info about this particular corpus on [NINJAL's website](https://ccd.ninjal.ac.jp/cmj/taiyou/index.html).
 
 The dataset consists of one XML file per magazine issue, with both text and metadata. The article text is hand-corrected and annotated with linguistic data at the word level, so the quality is much better than OCR on documents from this time/language. Metadata in the XML tags includes:
 - publishing information for the magazine issues
