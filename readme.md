@@ -1,72 +1,38 @@
 # Taiyō Corpus Tools
-_this doc last updated 23 September, 2022_
+_last updated 26 September, 2022_
 
 ## Intro
-Taiyō Corpus Tools is a set of short Python scripts that preprocesses Japanese-language text from [NINJAL's Taiyō Corpus](https://ccd.ninjal.ac.jp/cmj/taiyou/index.html) for use with common text analysis software. The steps consist of:
- 
-1. convert_shiftjis_utf8.py -- convert NINJAL's Shift-JIS-encoded, XML files of monthly magazine issues to UTF-8 with romanized XML tag names
-2. extract_metadata_text.py -- strip out XML tags and parses articles into individual text files; save corresponding article metadata in a separate CSV
-3. tokenize.py -- insert whitespace between words using MeCab and save final output as article-level .txt files
+Taiyō Corpus Tools is a set of short Python scripts that preprocesses Japanese-language text from [NINJAL's Taiyō 太陽 magazine corpus](https://ccd.ninjal.ac.jp/cmj/taiyou/index.html) for use with common analysis software. Run the three scripts in order:
+
+* 1-convert_shiftjis_utf8.py -- convert NINJAL's Shift-JIS-encoded, XML files of monthly magazine issues to UTF-8 with ASCII XML tags/attributes
+
+* 2-extract_metadata_text.py -- export article text content only to individual files; save article-level metadata from XML tags to single CSV
+
+* 3-tokenize.py -- insert whitespace between words in article text using MeCab and save final output as individual, tokenized text files
 
 ### Requirements
-* NINJAL Taiyō Corpus data files (see [About the data](#-about-the-data) section below)
+* NINJAL Taiyō Corpus data files (see [Get the source data](#get-the-source-data) below)
 * [Beautiful Soup 4](https://www.crummy.com/software/BeautifulSoup/)
 * [mecab-python3](https://pypi.org/project/mecab-python3/)
 * [近代文語UniDic](https://clrd.ninjal.ac.jp/unidic/) (UniDic for Modern Literary Japanese, suggested)
+* Configure MeCab to use non-default dictionary
 
 ## Get started
 ### Set up your environment
-I last debugged and tested this project using Python 3.9 on Mac OS 10.13. You may run into unexpected issues on another setup, but further resources linked throughout this document should be of help.
+Tokenization requires mecab-python3 and assumes you have changed your default dictionary to 近代文語UniDic (UniDic for Modern Literary Japanese). See Aurora Tsai's comprehensive [guide to installing MeCab and MeCab Python Wrapper](https://rpubs.com/auroratsai/462798) for very clear instructions on multiple systems (Mac, Windows, and LinuxBrew).
 
-The tokenization step requires mecab-python3 and assumes you have changed your default dictionary to 近代文語UniDic (UniDic for Modern Literary Japanese). See Aurora Tsai's comprehensive [guide to installing MeCab and MeCab Python Wrapper](https://rpubs.com/auroratsai/462798) for very clear instructions for this whole process for multiple systems (Mac, Windows, and LinuxBrew).
+Using the 近代文語UniDic is optional, but it most closely matches Taiyō's era and style of language and should produce the best word-splitting results. There are a whole range of dictionaries and their documentation at the [UniDic homepage](https://clrd.ninjal.ac.jp/unidic/).
 
-Using the Modern Literary Japanese 近代文語 dictionary is optional, but it most closely matches Taiyō's era and style of language and should produce the best word-splitting results. There are a whole range of dictionaries and their documentation at the [UniDic homepage](https://clrd.ninjal.ac.jp/unidic/). Of course, if you decide to use the default dictionary you can skip the customization step.
+### Directory structure
+All three scripts assume the following directory structure relative to themselves.
 
-### Get the source data
-This repo **does not contain** the data files that make up NINJAL's corpus. Their [2005 CD-ROM edition](https://ccd.ninjal.ac.jp/cmj/taiyou/index.html) may still be found on secondary markets if you wish to purchase your own copy. Other suggestions below from my former life as an academic librarian.
-
-The Taiyō Corpus is now part of the Meiji/Taishō historical corpora available on NINJAL's Chūnagon 中納言 corpus browser platform (free with registration), but I don't know if data download is possible or in similar format to the CD-ROM's files. Contact NINJAL with any questions about accessing data from them directly.
-
-Some university libraries in Japan and elsewhere own the CD-ROMs and lend it via Inter-Library Loan or equivalent (see the [Worldcat entry](http://www.worldcat.org/oclc/191854098) for North American libraries). If you are affiliated with an academic institution, ask your library for guidance.
-
-_A version of the Taiyō magazine archives is lately available on the JapanKnowledge platform, which some universities license. It is **not compatible** with these scripts, not least because it doesn't contain article full-text._
-
-
-## Background
-### Why?
-The tasks performed by these three scripts are common ones for making Japanese-language text files compatible with NLP software. Typically, non-Japanese-specific tools assume whitespace tokenization or UTF-8 encoding. Additionally, Beautiful Soup and other XML/HTML parsing libraries cannot handle non-ASCII tag or attribute names, as found in the NINJAL Taiyō files (as of this writing). None of the issues with these files is unique to the NINJAL corpus or data prepared by NINJAL generally. You may encounter specialized encoding or seemingly quirky technical aspects in any Japanse text documents, especially if they are "older" (relatively speaking). My description applies to the _vast majority_ of what you might find as source material for text analysis projects online in Japanese, even in 2022, in fields ranging from literature to law and government. However, this mismatch of source and software is solvable.
-
-My motivation was personal: I wanted to try using the Taiyō articles with software popular among digital humanities enthusiasts, like Voyant, AntConc, or Topic Modeling Tool. I also wanted to be able to show the possibilities to colleagues in academic librarianship or university Japanese studies programs through demos and workshops. However, "having" texts in some machine-readable format doesn't mean they are necessarily compatible with the widespread assumptions of DH tools outside Japan. It is the start but often not the end.
-
-Short and simple as it looks now, when I began grappling with Taiyō around 2015, I was still using Python 2.7 and there was little to no documentation online (in any language I read) that really addressed what I was attempting to do. I spent a long time searching online and reading Japanese or English blog posts about barely-referenced options for MeCab, cobbling tidbits from various sources together to eventually solve my problem: a MeCab parsing option that was compatible with the dictionary I needed to use; getting around non-ASCII XML tags breaking the libraries I tried to parse them; and dealing with the niche encoding. (I got some invaluable advice from colleagues as well.) In 2022, some of the issues are either much more searchable online, or no longer exist in Python 3 -- especially re: Unicode data, bane of my existence in 2.7.
-
-I am very pleased to no longer be hitting my head against the wall of ancient Python "handling" of Unicode (etc), but some things that now seem obvious to me may still not be straightforward to others. I hope documenting my process, and sharing the code, can save someone else from doing the same with their own annoying barrier to research with historical Japanese texts.
-
-### About the data
-NINJAL's Taiyō Corpus is a subset of full-text, hand-corrected articles from [Taiyō 太陽 magazine](https://ja.wikipedia.org/wiki/%E5%A4%AA%E9%99%BD_(%E5%8D%9A%E6%96%87%E9%A4%A8) (1895-1928). The contents of the corpus include all articles from issues published in 1895, 1901, 1909, 1917, 1925. While it is a large amount of text, it doesn't cover the magazine's run comprehensively. You can find more info about this particular corpus on the [official Taiyo corpus page at NINJAL](https://ccd.ninjal.ac.jp/cmj/taiyou/index.html). Although the CD-ROM edition includes the Himawari software for corpus analysis, the scripts I provide here are meant for getting the text and select metadata usable with any *other* tools -- especially those that are not meant specifically for Japanese language.
-
-The data consists of one XML file per magazine issue containing all articles' text and metadata. The corpus is hand-corrected full-text annotated by professional linguists -- very high quality, and far better than OCR alone given its poor performance on Japanese documents of this period and format. All metadata is contained within the XML tags in the data files: publishing information for the magazine issues and each article (author, title, genre) and specialized linguistic attributes at the article or word level (style of speech, and glosses of errors or rare kanji that could not be entered at the time). There is tokenization of the articles themselves but only at the sentence level.
-
-### Why this particular way / my choices
-Each script in this pipeline performs a very simple task, but I have kept them separate to simplify reuse by others who aren't working with this specific corpus. They are potentially text processing tasks specific & common to Japanese - encoding conversion, dealing with non-ASCII XML tag names or attributes and why that's a problem for BS, and tokenizing.
-These scripts = modular/reusable.
-
-WHY BS not another XML library?
-
-
-## Running the scripts
-### 0. Directory structure.
-All three scripts assume the following structure relative to the folder they reside in (files listed before directories). Input and output data, and the metadata CSV exported in step 2, are in subfolders within the "data/" directory.
-
-*Before running the scripts, make sure expected directories exist within "data/" (articles, tokenized, utf8).* Each script saves its own separate output without overwriting previous steps.
-
-"data/taiyo_cd/" indicates the corpus CD-ROM data with its file structure as-is.
+*Before running the scripts, make sure expected directories exist within "data/" folder: articles, tokenized, utf8.* Each script saves output separately without overwriting previous files. "data/taiyo_cd/" indicates the corpus CD-ROM data, not included here.
 
 ```
 Taiyo/
-|-- convert_shiftjis_utf8.py
-|-- extract_metadata_text.py
-|-- tokenize.py
+|-- 1-convert_shiftjis_utf8.py
+|-- 2-extract_metadata_text.py
+|-- 3-tokenize.py
 `-- data/
     |-- taiyo_metadata.csv
     |-- articles/
@@ -102,37 +68,82 @@ Taiyo/
         `-- u-t192514.xml
 ```
 
+### Get the source data
+This repo **does not contain** the data files that make up NINJAL's corpus. I assume the contents of "data/taiyo_cd/" is a copy of the [2005 CD-ROM edition](http://www.hakubunkan.co.jp/gengo/taiyoC.html). It may still be purchased on secondary markets, but below are some other suggestions on getting the text data.
+
+The Taiyō Corpus is now part of the [Meiji/Taishō historical corpora](https://clrd.ninjal.ac.jp/chj/meiji_taisho.html) available on NINJAL's Chūnagon 中納言 corpus browser platform (free with registration), but access to the full dataset probably requires contacting them directly.
+
+Some university libraries own the CD-ROMs and lend it via Inter-Library Loan or equivalent (see the [Worldcat entry](http://www.worldcat.org/oclc/191854098) for an example). If you are affiliated with a university, ask your librarian for guidance.
+
+_A version of the Taiyō magazine archives is also available on the JapanKnowledge platform, which some universities license. It is **not compatible** with these scripts._
+
+
+## Background
+### Why?
+Short and simple as it looks now, when I started trying to work with NINJAL's Taiyō Corpus in 2015, I could find almost no documentation that really addressed the issues I ran into. Because I was still using Python 2.7 at the time, dealing with documents encoded with UTF-8 or Shift-JIS was also much more of a struggle.
+
+I spent a long time searching online and reading Japanese or English blog posts that were mainly about something else, cobbling together a solution to my issues with tidbits from various tangential sources. (I got some invaluable tips on MeCab configuration directly from [Mark Ravina](https://liberalarts.utexas.edu/history/faculty/mr56267) as well.)
+
+In 2022, some of the problems I encountered have solutions readily searchable online, or even better, no longer exist. But "quirky" issues like the ones here are still common with Japanese-language documents, and not unique to Taiyō. I hope documenting my process, and sharing the code, can save others some time and frustration.
+
+### About the data
+NINJAL's Taiyō Corpus contains full-text, hand-corrected articles from [Taiyō 太陽 magazine](https://ja.wikipedia.org/wiki/%E5%A4%AA%E9%99%BD_(%E5%8D%9A%E6%96%87%E9%A4%A8) (published 1895-1928). The corpus includes thousands of articles from 1895, 1901, 1909, 1917, and 1925. You can find more info about this particular corpus on the [official Taiyo corpus page at NINJAL](https://ccd.ninjal.ac.jp/cmj/taiyou/index.html). The scripts I provide here are meant for getting the text and select metadata usable with software not meant specifically for Japanese-language text.
+
+The dataset consists of one XML file per magazine issue, with both text and metadata. The article text is hand-corrected and annotated with linguistic data at the word level, so the quality is much better than OCR on documents from this time/language. Metadata in the XML tags includes:
+- publishing information for the magazine issues
+- publishing information for each article (author, title, genre)
+- specialized linguistic attributes at the article or word level (style of speech, and glosses of errors or rare kanji that could not be entered at the time).
+
+Article text is tokenized at the sentence level only.
+
+## Running the scripts
+All three scripts operate assuming the [directory structure and files described above](#directory-structure). They should be run in the top-level project directory with no arguments.
+
 ### Step 1: Shift-JIS to Unicode and XML normalization
-*convert_shiftjis_utf8.py*
-The Taiyō XML files contain many XML elements and attributes named in Japanese. As of this writing, Beautiful Soup cannot handle them as-is (although non-ASCII attribute values don't present issues). This script replaces all non-ASCII tag and element names with romanized or brief translated equivalents. Output is saved as one UTF-8 .xml file per magazine issue, in "utf8/" with u- preceding the source CD-ROM filenames.
+The Taiyō XML files contain many XML elements and attributes named in Japanese. While this is valid XML, it presents a problem for parsing libraries (as of this writing). This script replaces all non-ASCII tag and element names with romanized or English keyword equivalents. Output is saved as one UTF-8 .xml file per magazine issue, in directory "utf8/" with u- preceding the source CD-ROM filenames.
 
 ### Step 2: Extract article text and metadata
-*extract_metadata_text.py*
 This step extracts contents (text) of each article and saves one *untokenized* .txt file per article in directory "articles/". The metadata for each article contained in XML attributes is saved separately as a CSV file in the "data/" directory. No metadata is saved in the .txt files themselves.
 
-The naming scheme I used, "issue_author_title.txt", creates unique filenames that map one-to-one with the full metadata CSV so no information should be lost. However, filename convention is easily changed during CSV building and file output steps.
+The naming scheme I used is "articleID_issue_author_title.txt", where articleID is a simple counter of articles that increments as they are processed. This was an arbitrary choice and can be changed easily, but beware of the small number of articles where issue, author, and title are not enough to create unique filenames.
 
 ### Step 3: Tokenize article text with MeCab
-*tokenize.py*
-Have MeCab put a space between "words" in the texts from Step 2. This saves a new set of files rather than overwriting Step 2's output. saves resulting text as UTF-8 .txt in directory "tokenized/".
+Finally, tokenize the article text in Step 2 output files, inserting whitespace between "words" as parsed by MeCab using the 近代文語UniDic. The resulting text is saved as a new set of article files in directory "tokenized/", with t- preceding filenames in the "articleID_issue_author_title.txt" format of Step 2.
 
+## Final output
+* "data/taiyo_metadata.csv" -- CSV containing all article metadata retained from original files' XML tags. Columns are:
+  * articleid (counter kept for disambiguation)
+  * issue (publication date as YYYYMM)
+  * title
+  * author
+  * section ('欄名', such as 論説, 名家談叢, 海外事情)
+  * style ('文体', spoken or written)
+  * genre ('ジャンル', as [NDC codes](https://www.jla.or.jp/committees/bunrui/tabid/187/Default.aspx))
+* "data/tokenized/*.txt" -- UTF-8 text files containing article contents, tokenized with whitespace between words using MeCab (no metadata saved inside files). One file per article in format "issue_author_title.txt"
 
-## Further Resources
-[NINJAL Taiyo Corpus](https://ccd.ninjal.ac.jp/cmj/taiyou/index.html)
-[UniDic download & documentation page](https://ccd.ninjal.ac.jp/unidic/en/download_all_en)
-[guide to installing MeCab and MeCab Python Wrapper](https://rpubs.com/auroratsai/462798)
-[J blogpost about wakati](link)
-[my own old post(s) about Taiyo, as relevant](links)
-[Japanese NLP posts by Paul O'Leary McCann @ Dampfkraft](https://www.dampfkraft.com/nlp.html)
+*Note*: Missing or N/A author value is indicated in CSV and filenames with ＊. For example:
+```
+t-189504_＊_長三州翁逝く.txt
+t-191704_＊_〈新刊紹介〉.txt
+```
+Missing section ＊＊ and genre ＊＊＊ values also appear in the CSV.
+
+## Further resources
+- [Taiyō Corpus](https://ccd.ninjal.ac.jp/cmj/taiyou/index.html)
+- [UniDic download & documentation page](https://ccd.ninjal.ac.jp/unidic/en/download_all_en)
+- [NINJAL 国立国語研究所 homepage](https://www.ninjal.ac.jp/)
+- Aurora Tsai's guide to [installing MeCab and MeCab Python Wrapper](https://rpubs.com/auroratsai/462798)
+- [MeCab-Pythonで分かち書きと形態素解析](https://testpy.hatenablog.com/entry/2016/10/04/010000) by [Shoto](https://github.com/iShoto)
+- [Japanese NLP posts](https://www.dampfkraft.com/nlp.html) by Paul O'Leary McCann at Dampfkraft
 
 
 ## Reuse
 Copyright Molly Des Jardin
 
-I wrote these scripts for my own, one-time personal use, and no longer maintain them. Ideally, I would prefer command line arguments and/or a config file instead of so much hard-coding throughout. There are doubtless other changes that might improve the code or design. I chose a very permissive license for a reason: please freely adopt and enhance this basic code in your own projects.
+I wrote these scripts for my own, one-time personal use, and no longer maintain them. There are doubtless many changes that might improve the project (not least, less hard coding in favor of command line arguments or a config file). Please feel free to reuse or enhance this basic code in your own projects.
 
 
-MIT License
+*MIT License*
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
