@@ -36,12 +36,10 @@ Taiyo/
 `-- data/
     |-- taiyo_metadata.csv
     |-- articles/
-    |   |-- 189501_＊_〈扉〉.txt
-    |   |-- 189501_＊_〈新年挨拶〉.txt
+    |   |-- 0001_190103_＊_〈扉〉.txt
+    |   |-- 0002_190103_＊_憲政の一大危機.txt
+    |   |-- 0003_190103_肥塚龍_支那保全と満州処分.txt
     |   |-- ...
-    |   |-- 192514_金易二郎（出題）_詰将棋新題.txt
-    |   |-- 192514_金易二郎（評）_高段名手　特選将棋.txt
-    |   `-- 192514_鬼谷庵_政界鬼語.txt
     |-- taiyo_cd/
     |   |-- autorun.inf
     |   |-- Himawari/
@@ -55,12 +53,10 @@ Taiyo/
     |       |-- ...
     |       `-- t192514.xml
     |-- tokenized/
-    |   |-- t-189501_＊_〈扉〉.txt
-    |   |-- t-189501_＊_〈新年挨拶〉.txt
+    |   |-- t-0001_190103_＊_〈扉〉.txt
+    |   |-- t-0002_190103_＊_憲政の一大危機.txt
+    |   |-- t-0003_190103_肥塚龍_支那保全と満州処分.txt
     |   |-- ...
-    |   |-- t-192514_金易二郎（出題）_詰将棋新題.txt
-    |   |-- t-192514_金易二郎（評）_高段名手　特選将棋.txt
-    |   `-- t-192514_鬼谷庵_政界鬼語.txt
     `-- utf8/
         |-- u-t189501.xml
         |-- u-t189502.xml
@@ -112,7 +108,7 @@ Finally, tokenize the article text in Step 2 output files, inserting whitespace 
 
 ## Final output
 * "data/taiyo_metadata.csv" -- CSV containing all article metadata retained from original files' XML tags. Columns are:
-  * articleid (counter kept for disambiguation)
+  * articleid (4-digit counter for uniqueness)
   * issue (publication date as YYYYMM)
   * title
   * author
