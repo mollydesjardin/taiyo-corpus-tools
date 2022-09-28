@@ -19,9 +19,9 @@ Taiyō Corpus Tools is a set of short Python scripts that preprocesses Japanese-
 
 ## Get started
 ### Set up your environment
-Tokenization requires mecab-python3 and assumes you have changed your default dictionary to 近代文語UniDic (UniDic for Modern Literary Japanese). See Aurora Tsai's comprehensive [guide to installing MeCab and MeCab Python Wrapper](https://rpubs.com/auroratsai/462798) for very clear instructions on multiple systems (Mac, Windows, and LinuxBrew).
+Tokenization requires mecab-python3 and assumes you have already changed your default dictionary to 近代文語UniDic (UniDic for Modern Literary Japanese) if using it. See Aurora Tsai's comprehensive [guide to installing MeCab and MeCab Python Wrapper](https://rpubs.com/auroratsai/462798) for very clear instructions on multiple systems (Mac, Windows, and LinuxBrew).
 
-Using the 近代文語UniDic is optional, but it most closely matches Taiyō's era and style of language and should produce the best word-splitting results. There are a whole range of dictionaries and their documentation at the [UniDic homepage](https://clrd.ninjal.ac.jp/unidic/).
+Using 近代文語UniDic is optional, but it most closely matches Taiyō's era and style of language for the best word-splitting results.
 
 ### Directory structure
 All three scripts assume the following directory structure relative to themselves.
@@ -67,7 +67,7 @@ Taiyo/
 ### Get the source data
 This repo **does not contain** the data files that make up NINJAL's corpus. I assume the contents of "data/taiyo_cd/" is a copy of the [2005 CD-ROM edition](http://www.hakubunkan.co.jp/gengo/taiyoC.html). It may still be purchased on secondary markets, but below are some other suggestions on getting the text data.
 
-The Taiyō Corpus is now part of the [Meiji/Taishō historical corpora](https://clrd.ninjal.ac.jp/chj/meiji_taisho.html) available on NINJAL's Chūnagon 中納言 corpus browser platform (free with registration), but access to the full dataset probably requires contacting them directly.
+The Taiyō Corpus is now part of the [Meiji/Taishō historical corpora](https://clrd.ninjal.ac.jp/chj/meiji_taisho.html) available on NINJAL's Chūnagon 中納言 corpus browser platform (free with registration). Contact NINJAL directly with questions about what data is available through this method.
 
 Some university libraries own the CD-ROMs and lend it via Inter-Library Loan or equivalent (see the [Worldcat entry](http://www.worldcat.org/oclc/191854098) for an example). If you are affiliated with a university, ask your librarian for guidance.
 
@@ -83,12 +83,12 @@ I spent a long time searching online and reading Japanese or English blog posts 
 In 2022, some of the problems I encountered have solutions readily searchable online, or even better, no longer exist. But "quirky" issues like the ones here are still common with Japanese-language documents, and not unique to Taiyō. I hope documenting my process, and sharing the code, can save others some time and frustration.
 
 ### About the data
-NINJAL's Taiyō Corpus contains full-text, hand-corrected articles from [Taiyō 太陽 magazine](https://ja.wikipedia.org/wiki/%E5%A4%AA%E9%99%BD_%28%E5%8D%9A%E6%96%87%E9%A4%A8%29) (published 1895-1928). The corpus includes thousands of articles from 1895, 1901, 1909, 1917, and 1925. You can find more info about this particular corpus on [NINJAL's website](https://ccd.ninjal.ac.jp/cmj/taiyou/index.html).
+NINJAL's Taiyō Corpus contains full-text articles from [Taiyō 太陽 magazine](https://ja.wikipedia.org/wiki/%E5%A4%AA%E9%99%BD_%28%E5%8D%9A%E6%96%87%E9%A4%A8%29) (published 1895-1928). The corpus includes thousands of articles from 1895, 1901, 1909, 1917, and 1925. You can find more info about this particular corpus on [NINJAL's website](https://ccd.ninjal.ac.jp/cmj/taiyou/index.html).
 
-The dataset consists of one XML file per magazine issue, with both text and metadata. The article text is hand-corrected and annotated with linguistic data at the word level, so the quality is much better than OCR on documents from this time/language. Metadata in the XML tags includes:
+The dataset consists of one XML file per magazine issue, with both text and metadata. The article text is hand-corrected and annotated with linguistic data, including at the word level, so the quality is much better than OCR on documents from this time/language. Metadata in the XML tags includes:
 - publishing information for the magazine issues
 - publishing information for each article (author, title, genre)
-- specialized linguistic attributes at the article or word level (style of speech, and glosses of errors or rare kanji that could not be entered at the time).
+- linguistic attributes at the article or word level (style of speech, and glosses of errors or rare kanji that could not be entered at the time).
 
 Article text is tokenized at the sentence level only.
 
@@ -115,7 +115,7 @@ Finally, tokenize the article text in Step 2 output files, inserting whitespace 
   * section ('欄名', such as 論説, 名家談叢, 海外事情)
   * style ('文体', spoken or written)
   * genre ('ジャンル', as [NDC codes](https://www.jla.or.jp/committees/bunrui/tabid/187/Default.aspx))
-* "data/tokenized/*.txt" -- UTF-8 text files containing article contents, tokenized with whitespace between words using MeCab (no metadata saved inside files). One file per article in format "issue_author_title.txt"
+* "data/tokenized/*.txt" -- UTF-8 text files containing only article contents, tokenized with whitespace between words using MeCab. One file per article in format "t-articleID_issue_author_title.txt"
 
 *Note*: Missing or N/A author value is indicated in CSV and filenames with ＊. For example:
 ```
