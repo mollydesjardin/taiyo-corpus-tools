@@ -1,8 +1,8 @@
 # Taiyō Corpus Tools
-_last updated 27 September, 2022_
+_last updated 1 January, 2023_
 
 ## Intro
-Taiyō Corpus Tools is a set of short Python scripts that preprocesses Japanese-language text from [NINJAL's Taiyō 太陽 magazine corpus](https://ccd.ninjal.ac.jp/cmj/taiyou/index.html) for use with common analysis software. Run the three scripts in order:
+Taiyō Corpus Tools is a set of short Python scripts that preprocesses Japanese-language text from [NINJAL's Taiyō 太陽 magazine corpus](https://ccd.ninjal.ac.jp/cmj/taiyou/index.html) for use with common analysis software. Run the three scripts in order, optionally stopping at the step that produces what you need as output:
 
 * 1-convert_shiftjis_utf8.py -- convert NINJAL's Shift-JIS-encoded, XML files of monthly magazine issues to UTF-8 with ASCII XML tags/attributes
 
@@ -19,14 +19,14 @@ Taiyō Corpus Tools is a set of short Python scripts that preprocesses Japanese-
 
 ## Get started
 ### Set up your environment
-Tokenization requires mecab-python3 and assumes you have already changed your default dictionary to 近代文語UniDic (UniDic for Modern Literary Japanese) if using it. See Aurora Tsai's comprehensive [guide to installing MeCab and MeCab Python Wrapper](https://rpubs.com/auroratsai/462798) for very clear instructions on multiple systems (Mac, Windows, and LinuxBrew).
+Tokenization requires mecab-python3, which may install MeCab for you on some systems; otherwise, install MeCab itself first. If using a custom dictionary as recommended, I assume you already configured this or uncomment and specify the path in the alternate Tagger instantiation in step 3. There are many guides to installing/configuring MeCab available online, so I encourage you to search rather than providing my own (soon-to-become stale) instructions here. Using 近代文語UniDic is optional, but it most closely matches Taiyō's era and style of language for the best word-splitting results.
 
-Using 近代文語UniDic is optional, but it most closely matches Taiyō's era and style of language for the best word-splitting results.
+If you are installing MeCab exclusively for use with Python via a wrapper like mecab-python3 or fugashi and doing so in (Ana)conda, the many guides on configuring MeCab may not match the directories you end up with on your own system. This is the reason I provided an alternate line of code for instantiating a MeCab.Tagger that ignores any mecabrc (config file) and specifies the dictionary path, which you can point wherever you want. It looks clunkier but is a quick workaround that should Just Get It Done (cross-platform too). As a bonus, if you are planning to *never* use the default unidic and instead only use custom dictionaries, no need to download/install anything other than what you specifically need.
 
 ### Directory structure
-All three scripts assume the following directory structure relative to themselves.
+All three scripts assume the below directory structure, and assume they are run from the root project folder as shown. Each script saves its output as new sets of files, does not overwrite anything, and creates the expected output directory in "data" if it doesn't already exist.
 
-*Before running the scripts, make sure expected directories exist within "data/" folder: articles, tokenized, utf8.* Each script saves output separately without overwriting previous files. "data/taiyo_cd/" indicates the corpus CD-ROM data, not included here.
+"data/taiyo_cd/" indicates the corpus CD-ROM data, not included here. *Before running the scripts, make sure the data/taiyo_cd/XML/ directory exists and includes the initial XML input files.* Each script will quit with an error if its input directory does not exist, and this is the only one not created by a previous step.
 
 ```
 Taiyo/
@@ -36,9 +36,9 @@ Taiyo/
 `-- data/
     |-- taiyo_metadata.csv
     |-- articles/
-    |   |-- 0001_190103_＊_〈扉〉.txt
-    |   |-- 0002_190103_＊_憲政の一大危機.txt
-    |   |-- 0003_190103_肥塚龍_支那保全と満州処分.txt
+    |   |-- 189501001_＊_〈扉〉.txt
+    |   |-- 189501002_大橋新太郎_太陽の発刊.txt
+    |   |-- 189501003_久米邦武_学界の大革新.txt
     |   |-- ...
     |-- taiyo_cd/
     |   |-- autorun.inf
@@ -80,7 +80,7 @@ Short and simple as it looks now, when I started trying to work with NINJAL's Ta
 
 I spent a long time searching online and reading Japanese or English blog posts that were mainly about something else, cobbling together a solution to my issues with tidbits from various tangential sources. (I got some invaluable tips on MeCab configuration directly from [Mark Ravina](https://liberalarts.utexas.edu/history/faculty/mr56267) as well.)
 
-In 2022, some of the problems I encountered have solutions readily searchable online, or even better, no longer exist. But "quirky" issues like the ones here are still common with Japanese-language documents, and not unique to Taiyō. I hope documenting my process, and sharing the code, can save others some time and frustration.
+In 2023, some of the problems I encountered have solutions readily searchable online, or even better, aren't problems anymore because of developments in tools and software available. But "quirky" issues like the ones here are still common with Japanese-language documents, and not unique to Taiyō. I hope documenting my process, and sharing the code, can save others some time and frustration.
 
 ### About the data
 NINJAL's Taiyō Corpus contains full-text articles from [Taiyō 太陽 magazine](https://ja.wikipedia.org/wiki/%E5%A4%AA%E9%99%BD_%28%E5%8D%9A%E6%96%87%E9%A4%A8%29) (published 1895-1928). The corpus includes thousands of articles from 1895, 1901, 1909, 1917, and 1925. You can find more info about this particular corpus on [NINJAL's website](https://ccd.ninjal.ac.jp/cmj/taiyou/index.html).
@@ -90,10 +90,12 @@ The dataset consists of one XML file per magazine issue, with both text and meta
 - publishing information for each article (author, title, genre)
 - linguistic attributes at the article or word level (style of speech, and glosses of errors or rare kanji that could not be entered at the time).
 
-Article text is tokenized at the sentence level only.
+Article text is tokenized at the sentence level only with ```<s>``` tag, and I disregard that when tokenizing.
+
+Note that while issue numbers in both filesnames and XML metadata resemble a year + month format, the numbers do not necessarily reflect their corresponding calendar months (Jan == 01, ..., Dec == 12). Refer to NINJAL's documentation and/or a reliable bibliographic source to check for actual publication dates per issue.
 
 ## Running the scripts
-All three scripts operate assuming the [directory structure and files described above](#directory-structure). They should be run in the top-level project directory with no arguments.
+All three scripts operate assuming the [directory structure and files described above](#directory-structure). They should be run in the root project directory with no arguments.
 
 ### Step 1: Shift-JIS to Unicode and XML normalization
 The Taiyō XML files contain many XML elements and attributes named in Japanese. While this is valid XML, it presents a problem for parsing libraries (as of this writing). This script replaces all non-ASCII tag and element names with romanized or English keyword equivalents. Output is saved as one UTF-8 .xml file per magazine issue, in directory "data/utf8/" with u- preceding the source CD-ROM filenames.
@@ -101,21 +103,23 @@ The Taiyō XML files contain many XML elements and attributes named in Japanese.
 ### Step 2: Extract article text and metadata
 This step extracts contents (text) of each article and saves one *untokenized* .txt file per article in directory "data/articles/". The metadata for each article contained in XML attributes is saved separately as a CSV file in the "data/" directory. No metadata is saved in the .txt files themselves.
 
-The naming scheme I used is "articleID_issue_author_title.txt", where articleID is a simple counter of articles that increments as they are processed. This was an arbitrary choice and can be changed easily, but beware of the small number of articles where issue, author, and title are not enough to create unique filenames.
+The naming scheme I chose is "articleid_author_title.txt", where articleid is the issue month/year (YYYYNN) plus a 3-digit counter (reset per issue) for uniqueness. If you prefer different naming, be aware that using issue/author/title alone is not unique enough to prevent some identically-named files.
 
 ### Step 3: Tokenize article text with MeCab
-Finally, tokenize the article text in Step 2 output files, inserting whitespace between "words" as parsed by MeCab using the 近代文語UniDic. The resulting text is saved as a new set of article files in directory "data/tokenized/", with t- preceding filenames in the "articleID_issue_author_title.txt" format of Step 2.
+Finally, tokenize the article text in Step 2 output files, inserting whitespace between "words" as parsed by MeCab using the 近代文語UniDic. (This is done after discarding the ```<s>``` tag in Step 2 so it does not take sentence boundaries into account.) The resulting text is saved as a new set of article files in directory "data/tokenized/", with t- preceding filenames in the "articleid_author_title.txt" format of Step 2.
+
+On your system, if you already have MeCab installed and configured as you want, simply run the default un-commented Tagger instantiation line (using only option "-Owakati"). If you would like to skip some tedious setup of custom dictionaries and point MeCab to the dictionary you want it to use (skipping any messing around with config files or copy/pasting of dictionary files), use the alternate line below intead. Fill in the directory that contains the dictionary you want to use and comment out the default line instead.
 
 ## Final output
 * "data/taiyo_metadata.csv" -- CSV containing all article metadata retained from original files' XML tags. Columns are:
-  * articleid (4-digit counter for uniqueness)
-  * issue (publication date as YYYYMM)
+  * articleid (issue + 3-digit counter for uniqueness)
+  * issue (YYYYNN format, where YYYY is year in Western calendar and NN is number)
   * title
   * author
   * section ('欄名', such as 論説, 名家談叢, 海外事情)
   * style ('文体', spoken or written)
   * genre ('ジャンル', as [NDC codes](https://www.jla.or.jp/committees/bunrui/tabid/187/Default.aspx))
-* "data/tokenized/*.txt" -- UTF-8 text files containing only article contents, tokenized with whitespace between words using MeCab. One file per article in format "t-articleID_issue_author_title.txt"
+* "data/tokenized/*.txt" -- UTF-8 files containing only article text (no XML or metadata), tokenized with whitespace between words using MeCab. One file per article in format "t-articleid_author_title.txt."
 
 *Note*: Missing or N/A author value is indicated in CSV and filenames with ＊. For example:
 ```
@@ -128,6 +132,7 @@ Missing section ＊＊ and genre ＊＊＊ values also appear in the CSV.
 - [Taiyō Corpus](https://ccd.ninjal.ac.jp/cmj/taiyou/index.html)
 - [UniDic download & documentation page](https://ccd.ninjal.ac.jp/unidic/en/download_all_en)
 - [NINJAL 国立国語研究所 homepage](https://www.ninjal.ac.jp/)
+- [mecab-python3 source code & documentation](https://github.com/SamuraiT/mecab-python3) -- including some helpful troubleshooting tips
 - Aurora Tsai's guide to [installing MeCab and MeCab Python Wrapper](https://rpubs.com/auroratsai/462798)
 - [MeCab-Pythonで分かち書きと形態素解析](https://testpy.hatenablog.com/entry/2016/10/04/010000) by [Shoto](https://github.com/iShoto)
 - [Japanese NLP posts](https://www.dampfkraft.com/nlp.html) by Paul O'Leary McCann at Dampfkraft
