@@ -25,19 +25,32 @@
 # Step 1 of Taiyo Corpus Tools
 #
 # This script performs to tasks on a directory of .xml files:
-# Convert Shift-JIS encoding to UTF-8, ignoring # errors. This assumes there can # be issues with the input files that would cause the script to stop otherwise.
+# Convert Shift-JIS encoding to UTF-8, ignoring # errors. This assumes there can
+# be issues with the input files that would cause the script to stop otherwise.
 # The output files may be missing characters as as result.
 #
-# Replaces Japanese XML tag and attribute names with ASCII equivalent. Romaji is # used for Japanese-specific linguistic terms that can't be expressed simply in # English; for more common terms I chose an English translation.
+# Replaces Japanese XML tag and attribute names with ASCII equivalent. Romaji is 
+# used for Japanese-specific linguistic terms that can't be expressed simply in 
+# English; for more common terms I chose an English translation.
 #
-# Not all tag/attribute names are converted here. Those not used in later steps # of the Taiyo Corpus Tools are ignored here and left as-is.
+# Not all tag/attribute names are converted here. Those not used in later steps 
+# of the Taiyo Corpus Tools are ignored here and left as-is.
 #
 #
 # Output is UTF-8, XML files written to directory 'data/articles/' with prefix 
 # 'u-' added to the original filename. With the NINJAL Taiyo Corpus as source, 
 # the output is one .xml file per magazine issue.
 
-import glob
+from pathlib import Path
+
+inpath = Path.cwd().joinpath('data', 'taiyo_cd', 'XML')
+if (not(inpath.is_dir())):
+    print('input directory must exist relative to this script')
+    raise SystemExit(1)
+outpath = Path.cwd().joinpath('data', 'utf8')
+if (not(outpath.exists())):
+    outpath.mkdir()
+infiles = inpath.glob('*.xml')
 
 replacements = {
     'encoding="Shift_JIS"':'encoding="UTF-8"',
@@ -64,12 +77,12 @@ replacements = {
     '</非入力対象':'</ne'
     }
 
-for filename in glob.iglob('data/taiyo_cd/XML/*.xml'):
+for filename in infiles:
     with open(filename, mode='r', encoding='Shift-JIS', errors='ignore') as f:
         lines = f.read()
     for key in replacements.keys():
         lines = lines.replace(key,replacements[key])
 
-    with open('data/utf8/u-' + filename.split('/')[-1], mode='w', 
+    with open(outpath.joinpath('u-' + filename.name), mode='w', 
     encoding='utf-8') as f:
         f.write(lines)

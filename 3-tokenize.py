@@ -32,14 +32,28 @@
 # 'data/tokenized/'
 
 
-import MeCab, glob
+import MeCab
+from pathlib import Path
 
-tagger = MeCab.Tagger("-Owakati")
+inpath = Path.cwd().joinpath('data', 'articles')
+if (not(inpath.is_dir())):
+    print('input directory must exist relative to this script')
+    raise SystemExit(1)
+outpath = Path.cwd().joinpath('data', 'tokenized')
+if (not(outpath.exists())):
+    outpath.mkdir()
+infiles = inpath.glob('*.txt')
 
-for filename in glob.iglob("data/articles/*.txt"):
+# If you want to direct MeCab to a specific dictionary while ignoring mecabrc, 
+# instead use the second tagger instantiation line below (commented out by
+# default). Replace with the actual location of your dictionary.
+
+tagger = MeCab.Tagger('-Owakati')
+# tagger = MeCab.Tagger('-r /dev/null -d /path/to/60a_kindai-bungo -Owakati')
+
+for filename in infiles:
     with open(filename, 'r', encoding='utf-8') as f:
         text = f.read()
         parsed = tagger.parse(text)
-        output_filename = 'data/tokenized/t-{}'.format(filename.split('/')[-1])
-        with open(output_filename, 'w', encoding='utf-8') as f:
+        with open(outpath.joinpath('t-' + filename.name), 'w', encoding='utf-8') as f:
             f.write(parsed)

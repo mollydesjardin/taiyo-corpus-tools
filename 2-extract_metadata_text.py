@@ -31,11 +31,13 @@
 #
 # Output txt files do not contain metadata or other structure, and are not 
 # tokenized (no whitespace between words), saved with convention:
-#    'data/articles/issue_author_title.txt'
+#    'data/articles/articleid_author_title.txt'
+# Because the articleid consists of issue + counter, the issue (year/month) is
+# de facto included at the beginning of each filename.
 #
 # Metadata CSV is saved as 'data/taiyo_metadata.csv'. Columns in order:
 #	* articleid (unique ID number per article, padded to 4 digits)
-#	* issue (year/month of publication)
+#	* issue (year/number of publication)
 #	* title
 #	* author
 #	* section (欄名)
@@ -54,39 +56,50 @@
 #	* odoriji (踊字)
 #	* ne (非入力対象)
 #
-# Tags not retained, that don't enclose any text to retain:
+# Tags not retained, that don't enclose any text:
 #	* br
 #	* l
 #
 # ("tag removal" is achieved with article.text)
 
 from bs4 import BeautifulSoup as bs
-import glob, csv
-
+from pathlib import Path
+import csv
 
 metadata_keys = ['author','title','section','style','genre']
 metadata_list = []
-articleid = 0
 
-for infile in glob.iglob("data/utf8/*.xml"):
-	with open(infile, 'r', encoding='utf-8') as soup_in:
-		soup = bs(soup_in, features="xml")
+inpath = Path.cwd().joinpath('data','utf8')
+if (not(inpath.is_dir())):
+    print('input directory must exist relative to this script')
+    raise SystemExit(1)
+outpath = Path.cwd().joinpath('data', 'articles')
+if (not(outpath.exists())):
+    outpath.mkdir()
+infiles = inpath.glob('*.xml')
 
+for filename in infiles:
+    with open(filename, 'r', encoding='utf-8') as soup_in:
+        soup = bs(soup_in, features='xml')
+        articleid = 0
 # Extract month/date of issue (YYYYMM) from filename and retain for metadata CSV
 # This is hardcoded to match expected format from Taiyo Corpus Tools step 1.
-		issue = infile.split("/")[-1][3:-4]
+        issue = filename.stem[-6:]
 
-		for article in soup('article'):
-			articleid += 1
-			article_md = [str(articleid).zfill(4), issue]
-			for key in metadata_keys:
-				article_md.append(article.attrs[key])
-			metadata_list.append(article_md)
-			article_filename = 'data/articles/{}_{}_{}_{}.txt'.format(article_md[0],article_md[1],article_md[2],article_md[3])
-			with open(article_filename, 'w', encoding='utf-8') as output_file:
-				output_file.write(article.text.strip())
+        for article in soup('article'):
+            articleid += 1
+            if articleid > 999:
+                print("yes")
+            article_md = [issue + str(articleid).zfill(3), issue]
+            for key in metadata_keys:
+                article_md.append(article.attrs[key])
+            metadata_list.append(article_md)
+            article_filename = '{}_{}_{}.txt'.format(article_md[0],article_md[2],article_md[3])
+            with open(outpath.joinpath(article_filename), 'w', encoding='utf-8') as output_file:
+                output_file.write(article.text.strip())
 
-with open('data/taiyo_metadata.csv', 'w', encoding='utf-8') as csvfile:
+csvout = Path.cwd().joinpath('data', 'taiyo_metadata.csv')
+with open(csvout, 'w', encoding='utf-8') as csvfile:
 	writer = csv.writer(csvfile)
 	writer.writerow(['articleid', 'issue'] + metadata_keys)
 	writer.writerows(metadata_list)
