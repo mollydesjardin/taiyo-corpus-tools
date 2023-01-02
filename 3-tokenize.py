@@ -44,9 +44,11 @@ if (not(outpath.exists())):
     outpath.mkdir()
 infiles = inpath.glob('*.txt')
 
+
 # If you want to direct MeCab to a specific dictionary while ignoring mecabrc, 
 # instead use the second tagger instantiation line below (commented out by
-# default). Replace with the actual location of your dictionary.
+# default). Replace with the actual location of your dictionary and if using 
+# Windows replace /dev/null with the equivalent (NUL).
 
 tagger = MeCab.Tagger('-Owakati')
 # tagger = MeCab.Tagger('-r /dev/null -d /path/to/60a_kindai-bungo -Owakati')
