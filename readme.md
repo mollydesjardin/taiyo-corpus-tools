@@ -23,7 +23,7 @@ Tokenization requires mecab-python3, which may install MeCab for you on some sys
 
 Using 近代文語UniDic is optional, but it most closely matches Taiyō's era and language, so should produce better word-splitting results than a 21st-century default.
 
-_MeCab and Dictionary Config Note_
+#### MeCab and Dictionary Config Note
 If you are installing MeCab exclusively for use in Python scripts, a convenient method is to get the binary via your wrapper like mecab-python3 or fugashi. It is also common to install in a Python environment rather than directly on your system (in conda for example). However, the resulting directories and files created are very different from those assumed in many MeCab configuration guides out there online.
 
 I provided an alternate line of code for instantiating a MeCab.Tagger that should save time and frustration if this is how you installed mecab-python3. It ignores any existing mecabrc (config file) and specifies the dictionary path, which you can point wherever your dictionary is stored. You can also be certain MeCab is using the dictionary you intended.
