@@ -58,9 +58,9 @@ Taiyo/
     |       |-- ...
     |       `-- t192514.xml
     |-- tokenized/
-    |   |-- t-0001_190103_＊_〈扉〉.txt
-    |   |-- t-0002_190103_＊_憲政の一大危機.txt
-    |   |-- t-0003_190103_肥塚龍_支那保全と満州処分.txt
+    |   |-- t-189501001_＊_〈扉〉.txt
+    |   |-- t-189501002_大橋新太郎_太陽の発刊.txt
+    |   |-- t-189501003_久米邦武_学界の大革新.txt
     |   |-- ...
     `-- utf8/
         |-- u-t189501.xml
@@ -113,7 +113,7 @@ The naming scheme I chose is "articleid_author_title.txt", where articleid is th
 ### Step 3: Tokenize article text with MeCab
 Finally, tokenize the article text in Step 2 output files, inserting whitespace between "words" as parsed by MeCab using the 近代文語UniDic. (This is done after discarding the ```<s>``` tag in Step 2 so it does not take sentence boundaries into account.) The resulting text is saved as a new set of article files in directory "data/tokenized/", with t- preceding filenames in the "articleid_author_title.txt" format of Step 2.
 
-On your system, if you already have MeCab installed and configured as you want, simply run the default un-commented Tagger instantiation line (using only option "-Owakati"). If you would like to skip some tedious setup of custom dictionaries and point MeCab to the dictionary you want it to use (skipping any messing around with config files or copy/pasting of dictionary files), use the alternate line below intead. Fill in the directory that contains the dictionary you want to use and comment out the default line instead.
+On your system, if you already have MeCab installed and configured as you want, simply run the default un-commented Tagger instantiation line (using only option "-Owakati"). If you would like to skip some tedious setup of custom dictionaries and point MeCab to the dictionary you want it to use, use the alternate line intead. Fill in the directory that contains the dictionary you want to use and comment the default line instead.
 
 ## Final output
 * "data/taiyo_metadata.csv" -- CSV containing all article metadata retained from original files' XML tags. Columns are:
@@ -128,8 +128,7 @@ On your system, if you already have MeCab installed and configured as you want, 
 
 *Note*: Missing or N/A author value is indicated in CSV and filenames with ＊. For example:
 ```
-t-0001_190103_＊_〈扉〉.txt
-t-0002_190103_＊_憲政の一大危機.txt
+t-189501001_＊_〈扉〉.txt
 ```
 Missing section ＊＊ and genre ＊＊＊ values also appear in the CSV.
 
