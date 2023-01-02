@@ -1,5 +1,5 @@
 # Taiyō Corpus Tools
-_last updated 1 January, 2023_
+_last updated 2 January, 2023_
 
 ## Intro
 Taiyō Corpus Tools is a set of short Python scripts that preprocesses Japanese-language text from [NINJAL's Taiyō 太陽 magazine corpus](https://ccd.ninjal.ac.jp/cmj/taiyou/index.html) for use with common analysis software. Run the three scripts in order, optionally stopping at the step that produces what you need as output:
@@ -19,9 +19,14 @@ Taiyō Corpus Tools is a set of short Python scripts that preprocesses Japanese-
 
 ## Get started
 ### Set up your environment
-Tokenization requires mecab-python3, which may install MeCab for you on some systems; otherwise, install MeCab itself first. If using a custom dictionary as recommended, I assume you already configured this or uncomment and specify the path in the alternate Tagger instantiation in step 3. There are many guides to installing/configuring MeCab available online, so I encourage you to search rather than providing my own (soon-to-become stale) instructions here. Using 近代文語UniDic is optional, but it most closely matches Taiyō's era and style of language for the best word-splitting results.
+Tokenization requires mecab-python3, which may install MeCab for you on some systems; otherwise, install MeCab itself first. If using a custom dictionary as recommended, I assume you already configured this or uncomment and specify the path in the alternate Tagger instantiation in step 3. There are many guides to installing/configuring MeCab available online, so I encourage you to search rather than providing my own (soon-to-become stale) instructions here.
 
-If you are installing MeCab exclusively for use with Python via a wrapper like mecab-python3 or fugashi and doing so in (Ana)conda, the many guides on configuring MeCab may not match the directories you end up with on your own system. This is the reason I provided an alternate line of code for instantiating a MeCab.Tagger that ignores any mecabrc (config file) and specifies the dictionary path, which you can point wherever you want. It looks clunkier but is a quick workaround that should Just Get It Done (cross-platform too). As a bonus, if you are planning to *never* use the default unidic and instead only use custom dictionaries, no need to download/install anything other than what you specifically need.
+Using 近代文語UniDic is optional, but it most closely matches Taiyō's era and language, so should produce better word-splitting results than a 21st-century default.
+
+_MeCab and Dictionary Config Note_
+If you are installing MeCab exclusively for use in Python scripts, a convenient method is to get the binary via your wrapper like mecab-python3 or fugashi. It is also common to install in a Python environment rather than directly on your system (in conda for example). However, the resulting directories and files created are very different from those assumed in many MeCab configuration guides out there online.
+
+I provided an alternate line of code for instantiating a MeCab.Tagger that should save time and frustration if this is how you installed mecab-python3. It ignores any existing mecabrc (config file) and specifies the dictionary path, which you can point wherever your dictionary is stored. You can also be certain MeCab is using the dictionary you intended.
 
 ### Directory structure
 All three scripts assume the below directory structure, and assume they are run from the root project folder as shown. Each script saves its output as new sets of files, does not overwrite anything, and creates the expected output directory in "data" if it doesn't already exist.
