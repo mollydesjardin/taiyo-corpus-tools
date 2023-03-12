@@ -83,13 +83,12 @@ for filename in infiles:
         soup = bs(soup_in, features='xml')
         articleid = 0
 # Extract month/date of issue (YYYYMM) from filename and retain for metadata CSV
-# This is hardcoded to match expected format from Taiyo Corpus Tools step 1.
+# This is hardcoded to match expected format from Taiyo Corpus Tools step 1 and
+# fills to 3-digit counter (no issue has more than 999 articles).
         issue = filename.stem[-6:]
 
         for article in soup('article'):
             articleid += 1
-            if articleid > 999:
-                print("yes")
             article_md = [issue + str(articleid).zfill(3), issue]
             for key in metadata_keys:
                 article_md.append(article.attrs[key])

@@ -1,7 +1,6 @@
 *.pdf
 *.csv
 *.zip
-.DS_Store
 *.xml
 data/
 __pycache__/
